@@ -20,10 +20,16 @@ const AIInsights: React.FC<AIInsightsProps> = ({ entries }) => {
       const recentEntries = entries.slice(0, 15);
       
       const prompt = `
-        Analiza mis registros de comidas recientes y bríndame un resumen amigable sobre mi alimentación.
-        Identifica patrones positivos y sugiere 3 pequeñas mejoras saludables basadas en lo que he comido. 
-        Mantenlo corto, motivador y estructurado. 
-        Usa emojis. Responde en Español.
+        Actúa como un experto en nutrición clínica especializado en resistencia a la insulina y tratamiento con semaglutida.
+        Analiza mis registros de comidas enfocándote en una dieta baja en carbohidratos.
+        
+        Tus objetivos:
+        1. Evaluar si las comidas ayudan a estabilizar la glucosa y la insulina (control glucémico).
+        2. Verificar la ingesta de proteínas (vital al usar semaglutida para proteger la masa muscular).
+        3. Identificar alimentos que podrían causar malestar gástrico o digestión lenta (efectos secundarios comunes de la semaglutida).
+        4. Sugerir 3 ajustes específicos, saludables y motivadores para optimizar mi tratamiento metabólico.
+        
+        Mantenlo corto, estructurado y profesional. Usa emojis. Responde en Español.
         
         Mis datos son:
         ${JSON.stringify(recentEntries)}
@@ -54,7 +60,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ entries }) => {
           </div>
           <div>
             <h2 className="text-xl font-bold leading-tight">Analítica IA</h2>
-            <p className="text-blue-100 text-xs">Análisis basado en tus comidas</p>
+            <p className="text-blue-100 text-xs">Análisis metabólico especializado</p>
           </div>
         </div>
         
@@ -69,9 +75,9 @@ const AIInsights: React.FC<AIInsightsProps> = ({ entries }) => {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Analizando tu dieta...
+              Analizando tu tratamiento...
             </span>
-          ) : 'Ver Feedback de Nutrición'}
+          ) : 'Ver Feedback Metabólico'}
         </button>
       </div>
 
@@ -86,7 +92,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ entries }) => {
       {entries.length === 0 && (
         <div className="bg-gray-50 border border-dashed border-gray-200 rounded-3xl p-8 text-center">
           <p className="text-gray-400 text-sm">
-            Registra al menos una comida para habilitar el análisis de inteligencia artificial.
+            Registra al menos una comida para habilitar el análisis de inteligencia artificial sobre tu tratamiento.
           </p>
         </div>
       )}
