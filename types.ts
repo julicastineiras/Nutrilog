@@ -13,6 +13,7 @@ export interface MealEntry {
   type: MealType;
   content: string;
   timestamp: number;
+  image?: string;
 }
 
 export type TabType = 'register' | 'history' | 'insights';
