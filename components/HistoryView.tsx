@@ -11,6 +11,7 @@ interface HistoryViewProps {
 
 const HistoryView: React.FC<HistoryViewProps> = ({ entries, onDeleteEntry, onDeleteDay }) => {
   const [isExporting, setIsExporting] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const handleExport = () => {
     setIsExporting(true);
@@ -52,13 +53,28 @@ const HistoryView: React.FC<HistoryViewProps> = ({ entries, onDeleteEntry, onDel
           </svg>
         </div>
         <h3 className="text-xl font-bold text-gray-800">Historial vacío</h3>
-        <p className="text-gray-500 max-w-xs mt-2">Empieza a registrar tus comidas una a una para completar tu planilla.</p>
+        <p className="text-gray-500 max-w-xs mt-2">Empieza a registrar tus comidas para completar tu planilla.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
+      {/* Modal para ver imagen completa */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 animate-in fade-in duration-300"
+          onClick={() => setSelectedImage(null)}
+        >
+          <img src={selectedImage} alt="Comida completa" className="max-w-full max-h-[80vh] rounded-2xl shadow-2xl" />
+          <button className="absolute top-6 right-6 text-white p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md py-2 z-10">
         <h2 className="text-xl font-bold text-gray-800">Mi Planilla</h2>
         <button 
@@ -69,7 +85,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ entries, onDeleteEntry, onDel
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          {isExporting ? 'Exportando...' : 'Exportar Excel'}
+          {isExporting ? 'Exportando...' : 'Exportar CSV'}
         </button>
       </div>
 
@@ -87,7 +103,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ entries, onDeleteEntry, onDel
               </div>
               <button 
                 onClick={() => onDeleteDay(date)}
-                className="text-gray-300 hover:text-red-400 transition-colors"
+                className="text-gray-300 hover:text-red-400 transition-colors p-2"
                 title="Eliminar todo el día"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -113,7 +129,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ entries, onDeleteEntry, onDel
                           {entry && (
                             <button 
                               onClick={() => onDeleteEntry(entry.id)}
-                              className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-400 transition-all p-1"
+                              className="text-gray-300 hover:text-red-400 transition-all p-1"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -121,11 +137,23 @@ const HistoryView: React.FC<HistoryViewProps> = ({ entries, onDeleteEntry, onDel
                             </button>
                           )}
                         </div>
-                        {entry ? (
-                          <p className="text-gray-700 text-sm font-medium leading-relaxed">{entry.content}</p>
-                        ) : (
-                          <p className="text-gray-300 text-xs italic">Vacío</p>
-                        )}
+                        <div className="flex gap-3">
+                          <div className="flex-1">
+                            {entry ? (
+                              <p className="text-gray-700 text-sm font-medium leading-relaxed">{entry.content}</p>
+                            ) : (
+                              <p className="text-gray-300 text-xs italic">Sin registro</p>
+                            )}
+                          </div>
+                          {entry?.image && (
+                            <div 
+                              className="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-100 active:scale-95 transition-transform cursor-pointer"
+                              onClick={() => setSelectedImage(entry.image!)}
+                            >
+                              <img src={entry.image} alt="Comida" className="w-full h-full object-cover" />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

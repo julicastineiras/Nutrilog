@@ -1,5 +1,8 @@
+
 {
   "name": "NutriLog - Diario de Comidas",
   "description": "Una aplicación móvil elegante y funcional para registrar desayunos, almuerzos, meriendas, cenas y extras. Permite visualizar el historial completo y exportar los datos a formato Excel/CSV.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "camera"
+  ]
 }
