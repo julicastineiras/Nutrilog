@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { MealEntry, MealType } from '../types';
-import { exportToCSV } from '../services/export';
+import { exportToCSV, exportToPDF } from '../services/export';
 
 interface HistoryViewProps {
   entries: MealEntry[];
@@ -11,12 +11,24 @@ interface HistoryViewProps {
 
 const HistoryView: React.FC<HistoryViewProps> = ({ entries, onDeleteEntry, onDeleteDay }) => {
   const [isExporting, setIsExporting] = useState(false);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
+  // Rango de fechas para exportar
+  const today = new Date().toISOString().split('T')[0];
+  const [fromDate, setFromDate] = useState(today);
+  const [toDate, setToDate] = useState(today);
 
-  const handleExport = () => {
+  const handleExportCSV = () => {
     setIsExporting(true);
     exportToCSV(entries);
     setTimeout(() => setIsExporting(false), 2000);
+  };
+
+  const handleExportPDF = async () => {
+    setIsPdfLoading(true);
+    await exportToPDF(entries, fromDate, toDate);
+    setIsPdfLoading(false);
   };
 
   // Group entries by date
@@ -59,7 +71,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ entries, onDeleteEntry, onDel
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-4">
       {/* Modal para ver imagen completa */}
       {selectedImage && (
         <div 
@@ -75,21 +87,58 @@ const HistoryView: React.FC<HistoryViewProps> = ({ entries, onDeleteEntry, onDel
         </div>
       )}
 
-      <div className="flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md py-2 z-10">
-        <h2 className="text-xl font-bold text-gray-800">Mi Planilla</h2>
-        <button 
-          onClick={handleExport}
-          disabled={isExporting}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-full font-bold text-sm shadow-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          {isExporting ? 'Exportando...' : 'Exportar CSV'}
-        </button>
+      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+        <h2 className="text-lg font-bold text-gray-800">Exportar Historial</h2>
+        
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Desde</label>
+            <input 
+              type="date" 
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="w-full p-2 bg-gray-50 border-none rounded-lg text-xs font-semibold focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Hasta</label>
+            <input 
+              type="date" 
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="w-full p-2 bg-gray-50 border-none rounded-lg text-xs font-semibold focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <button 
+            onClick={handleExportPDF}
+            disabled={isPdfLoading}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-xs shadow-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+          >
+            {isPdfLoading ? (
+              <span className="animate-pulse">Generando...</span>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                PDF con Fotos
+              </>
+            )}
+          </button>
+          <button 
+            onClick={handleExportCSV}
+            disabled={isExporting}
+            className="px-4 py-2.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl font-bold text-xs hover:bg-blue-100 transition-colors disabled:opacity-50"
+          >
+            {isExporting ? 'Exportando...' : 'CSV'}
+          </button>
+        </div>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-8 mt-6">
         {sortedDates.map(date => (
           <div key={date} className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm relative">
             <div className="flex justify-between items-center mb-6 border-b border-gray-50 pb-3">
