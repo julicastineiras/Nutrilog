@@ -12,22 +12,23 @@
     <style>
         html, body {
             height: 100%;
-            height: 100dvh;
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            position: fixed;
             width: 100%;
             background-color: #f9fafb;
+            overflow-x: hidden;   /* solo bloquea scroll lateral */
+            overflow-y: auto;     /* permite scroll vertical */
         }
-        body {
+
+            body {
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-        #root {
-            height: 100%;
-            height: 100dvh;
+
+            #root {
+            min-height: 100vh;
         }
+
         /* Estilos para ocultar el área de renderizado de PDF del flujo normal */
         #pdf-render-area {
             position: absolute;
